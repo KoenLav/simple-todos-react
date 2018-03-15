@@ -5,32 +5,21 @@ jobs:
       xcode: "9.2.0"
     working_directory: ~/app
     environment:
-      TOOL_NODE_FLAGS=--max-old-space-size=8192
+      TOOL_NODE_FLAGS: --max-old-space-size=8192
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
     steps:
       - checkout
       - run:
           name: Set Ruby Version
           command: echo "ruby-2.3" > ~/.ruby-version
       - run:
-          name: install meteor-launch
-          command: |
-            npm install -g meteor-launch
-            # yarn global add git+https://git@github.com/wvanooijen92/meteor-launch.git#master
-            # npm install -g git+https://git@github.com/wvanooijen92/meteor-launch.git
-      - run:
           name: install Meteor
-          command: |
-            # only install meteor if bin isn't found
-            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com/ | /bin/sh
+          # only install meteor if bin isn't found
+          command: command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com/ | /bin/sh 
       - run:
           name: check versions
           command: |
-            echo "Node version:"
-            node -v
-            echo "NPM version:"
-            npm -v
-            echo "Yarn version:"
-            yarn -v
             echo "Meteor version:"
             # this forces Meteor to download whatever release your project is using
             meteor --version
@@ -41,32 +30,26 @@ jobs:
             meteor npm -v
       - run:
           name: install npm packages
-          command: |
-            meteor npm install
+          command: meteor npm install
       - run:
           name: Build iOS
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              # brew update
-
-              # brew install ruby
-              # echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bash_profile
-              # source ~/.bash_profile
-
-              brew cask install fastlane
+              sudo gem install fastlane -NV
+              sudo gem install bundler
 
               echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
+
               source ~/.bash_profile
 
-              git clone git@bitbucket.org:possys/deploy_certs.git .deploy_certs
-              mv .deploy_certs/. ./
+              meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
 
-              export LC_ALL=en_US.UTF-8
-              export LANG=en_US.UTF-8
+              mkdir .build/ios/project/fastlane
+              cp ./fastlane/* .build/ios/project/fastlane/
+              cp ./Gem/* .build/ios/project/
 
-              # cp .deploy_certs/fastlane/Fastfile /usr/local/lib/node_modules/meteor-launch/fastlane/Fastfile
-              
-              launch build https://pos-test.mrwinston.nl
-              launch testflight
-              # launch playstore
+              cd .build/ios/project
+
+              bundle install
+              bundle exec fastlane beta
             # fi
