@@ -12,6 +12,12 @@
 default_platform(:ios)
 xcversion(version: "9.2")
 
+platform :android do 
+  lane :beta
+
+  end
+end
+
 platform :ios do
 
   before_all do
@@ -31,7 +37,7 @@ platform :ios do
   desc "Build development version"
   lane :dev do
     build_app(
-      workspace: "Mr Winston.xcworkspace", 
+      workspace: ".build/ios/project/Mr Winston.xcworkspace", 
       scheme: "Mr Winston",
       clean: true,
       # project: "#{ENV['METEOR_OUTPUT_ABSOLUTE']}/ios/project/#{ENV['XCODE_SCHEME_NAME']}.xcodeproj",
@@ -43,7 +49,7 @@ platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
     team_id = "DXR2SHC2C7"
-    xcodeprojpath = "Mr Winston.xcodeproj"
+    xcodeprojpath = ".build/ios/project/Mr Winston.xcodeproj"
 
     upgrade_super_old_xcode_project(
       path: xcodeprojpath,
@@ -60,7 +66,7 @@ platform :ios do
     )
     
     build_app(
-      workspace: "Mr Winston.xcworkspace", 
+      workspace: ".build/ios/project/Mr Winston.xcworkspace", 
       scheme: "Mr Winston",
       clean: true,
       # project: "#{ENV['METEOR_OUTPUT_ABSOLUTE']}/ios/project/#{ENV['XCODE_SCHEME_NAME']}.xcodeproj",

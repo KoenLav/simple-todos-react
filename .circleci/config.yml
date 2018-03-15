@@ -32,7 +32,7 @@ jobs:
           name: install npm packages
           command: meteor npm install
       - run:
-          name: Build iOS
+          name: Build Meteor
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
               sudo gem install fastlane -NV
@@ -43,12 +43,6 @@ jobs:
               source ~/.bash_profile
 
               meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
-
-              mkdir .build/ios/project/fastlane
-              cp ./fastlane/* .build/ios/project/fastlane/
-              cp ./Gem/* .build/ios/project/
-
-              cd .build/ios/project
 
               bundle install
               bundle exec fastlane beta

@@ -10,6 +10,6 @@
 
 # sdk("iphoneos9.0")
 
-output_directory("./")
+output_directory("./build")
 
 skip_profile_detection(true)
