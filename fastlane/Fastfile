@@ -30,7 +30,6 @@ platform :ios do
 
   desc "Build development version"
   lane :dev do
-
     build_app(
       workspace: "Mr Winston.xcworkspace", 
       scheme: "Mr Winston",
