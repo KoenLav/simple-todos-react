@@ -8,20 +8,113 @@
 
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
+import './actions/sign_apk.rb'
 
 default_platform(:ios)
-xcversion(version: "9.2")
 
+# Todo: use fastlane for signing and submitting android builds
 platform :android do 
-  lane :beta
+  desc "Build beta Android version"
+  lane :beta do
+    androidprojpath = ".build/android/project"
+    androidbuildpath = androidprojpath + "/build/outputs/apk/"
+    ENV["ANDROID_STORE_PASS"] = ""
+    ENV["CERTIFICATE_PASSWORD"] = "koenkk"
+    
+    
+    gradle(
+      task: "clean",
+      project_dir: androidprojpath,
+      properties: {
+        # "android.injected.signing.store.file" => "./certs/upload.keystore",
+        # "android.injected.signing.store.password" => $ENV["ANDROID_STORE_PASS"],
+        # "android.injected.signing.key.alias" => "mrwinston",
+        # # "android.injected.signing.key.password" => $ENV["CERTIFICATE_PASSWORD"],
+      }
+    )
 
+    gradle(
+      task: "assemble",
+      project_dir: androidprojpath,
+      build_type: "Release",
+      properties: {
+        # "android.injected.signing.store.file" => "./certs/upload.keystore",
+        # "android.injected.signing.store.password" => ENV["ANDROID_STORE_PASS"],
+        # "android.injected.signing.key.alias" => "mrwinston",
+        # "android.injected.signing.key.password" => ENV["CERTIFICATE_PASSWORD"],
+      }
+    )
+
+    sign_apk(
+      keystore_path: ".certs/.keystore",
+      alias: "mrwinston",
+      storepass: ENV["ANDROID_STORE_PASS"],
+      tsa: "http://timestamp.comodoca.com/rfc316",
+    )
+
+    zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+    
+    gradle(task: "test")
+    
+    # delete_keychain(name: "mrwinston")
+
+    # create_keychain(
+    #   default_keychain: true,
+    #   name: "mrwinston",
+    #   unlock: true,
+    #   password: ENV["ANDROID_STORE_PASS"],
+    #   timeout: 3600,
+    #   lock_when_sleeps: true
+    # )
+
+    # get_certificates(
+    #   development: true,
+    #   username: "info@duodeka.nl",
+    #   platform: "android"
+    # )
+    
+    # import_certificate(
+    #   keychain_name: "mrwinston",
+    #   # keychain_path: "./certs/test.keystore",
+    #   certificate_path: ".certs/upload.p12",
+    #   log_output: true,
+    #   certificate_password: ENV["CERTIFICATE_PASSWORD"] || "default"
+    # )
+    
+    # sh("pwd")
+    
+    # sh(
+    #   "jarsigner", 
+    #   "--verbose",
+    #   "--sigalg", "SHA1",
+    #   "--storepass", ENV["ANDROID_STORE_PASS"],
+    #   "../" + androidbuildpath + "project-release-unsigned.apk",
+    #   "-keystore", "../.certs/keystore.jks",
+    #   "mykey"
+    # )
+
+    # sh(
+    #   "$ANDROID_ZIP_ALIGN",
+    #   "4",
+    #   "../" + androidbuildpath + "project-release-unsigned.apk",
+    #   "../" + androidbuildpath + "project-release.apk",
+    # )
+
+    supply(
+      package_name: "com.mrw.pos",
+      json_key: ".certs/google-auth.json",
+      apk: androidbuildpath + "project-release.apk",
+      track: "alpha"
+    )
   end
 end
 
 platform :ios do
-
+  
   before_all do
   
+    # xcversion(version: "9.2")
+
     if Helper.is_ci? # As in my local machine I don't need to import the certificates, only run if it's in the CI
       setup_circle_ci
     end
