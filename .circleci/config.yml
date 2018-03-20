@@ -23,7 +23,16 @@ jobs:
             brew tap caskroom/versions
             brew cask install android-sdk
             brew install gradle
-            export PATH="$PATH:/usr/local/share/android-sdk/tools"
+            #export PATH="$PATH:/usr/local/share/android-sdk/tools"
+      - run:
+          name: update android sdk
+          command: |
+            echo y | android update sdk --no-ui --all --filter tools,platform-tools,extra-google-m2repository,extra-google-google_play_services,extra-android-support,android-25
+            echo y | android update sdk --no-ui --all --filter build-tools-25.0.0               
+            if [ ! -d "/usr/local/android-sdk-linux/platforms/android-25" ]; then echo y | android update sdk --no-ui --all --filter "android-25"; fi
+            if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.0"; fi
+            if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
+
       - run:
           name: install Meteor
           # only install meteor if bin isn't found
