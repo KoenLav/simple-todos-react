@@ -46,7 +46,7 @@ jobs:
 
               echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
               bundle install
-              bundle exec fastlane ios beta
+              # bundle exec fastlane ios beta
             # fi
       - run:
           name: Build Meteor (Android)
