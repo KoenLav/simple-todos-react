@@ -8,11 +8,20 @@ jobs:
       TOOL_NODE_FLAGS: --max-old-space-size=8192
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
+      ANDROID_HOME: "/usr/local/share/android-sdk"
+      ANDROID_SDK_HOME: "/usr/local/share/android-sdk"
+      ANDROID_SDK_ROOT: "/usr/local/share/android-sdk"
     steps:
       - checkout
       - run:
           name: Set Ruby Version
           command: echo "ruby-2.3" > ~/.ruby-version
+      - run:
+          name: install android sdk
+          command: |
+            brew tap caskroom/cask
+            brew tap caskroom/versions
+            brew cask install android-sdk
       - run:
           name: install Meteor
           # only install meteor if bin isn't found
