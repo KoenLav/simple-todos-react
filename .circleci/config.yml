@@ -1,34 +1,15 @@
 version: 2
 jobs:
   build: 
-    macos:
-      xcode: "9.2.0"
     working_directory: ~/app
+    docker:
+      - image: circleci/node:8
     environment:
       TOOL_NODE_FLAGS: --max-old-space-size=8192
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
-      ANDROID_HOME: "/usr/local/share/android-sdk"
-      ANDROID_SDK_HOME: "/usr/local/share/android-sdk"
-      ANDROID_SDK_ROOT: "/usr/local/share/android-sdk"
     steps:
       - checkout
-      - run:
-          name: Set Ruby Version
-          command: echo "ruby-2.3" > ~/.ruby-version
-      - run:
-          name: install android sdk
-          command: |
-            brew tap caskroom/cask
-            brew tap caskroom/versions
-            brew cask install android-sdk
-            brew install gradle
-            #export PATH="$PATH:/usr/local/share/android-sdk/tools"
-      - run:
-          name: update android sdk
-          command: |
-            echo "y" | sdkmanager "build-tools;25.0.1"
-            echo "y" | sdkmanager "platforms;android-25"
       - run:
           name: install Meteor
           # only install meteor if bin isn't found
@@ -50,13 +31,49 @@ jobs:
       - run:
           name: Build Meteor
           command: |
-            source ~/.bash_profile
-            pwd
             meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
+      - persist_to_workspace:
+          root: ~/app
+          paths:
+            - node_modules
+  android:
+    working_directory: ~/app
+    docker:
+      - image: circleci/android:api-26-node8
+    steps:
+      - checkout:
+          path: ~/app
+      - attach_workspace:
+          at: ~/app
+      - run:
+          name: Build Meteor (Android)
+          command: |
+            pwd     
+
+            sudo gem install fastlane -NV
+            sudo gem install bundler
+
+            echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
+            bundle install
+
+            git clone git@bitbucket.org:possys/certs.git .certs
+            bundle exec fastlane android beta
+  ios:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login -o pipefail
+    steps:
+      - checkout:
+          path: ~/app
+      - run:
+          name: Set Ruby Version
+          command:  echo "ruby-2.4" > ~/.ruby-version
       - run:
           name: Build Meteor (IOS)
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                        ./gradlew wrapper --gradle-version 2.12
+
               sudo gem install fastlane -NV
               sudo gem install bundler
 
@@ -64,10 +81,14 @@ jobs:
               bundle install
               # bundle exec fastlane ios beta
             # fi
-      - run:
-          name: Build Meteor (Android)
-          command: |
-            pwd     
-            git clone git@bitbucket.org:possys/certs.git .certs
-            bundle exec fastlane android beta
-            
+workflows:
+  version: 2
+  node-android-ios:
+    jobs:
+      - build
+      - android:
+          requires:
+            - build
+      - ios:
+          requires:
+            - build
