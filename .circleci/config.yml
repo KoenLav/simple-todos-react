@@ -52,11 +52,6 @@ jobs:
           name: Build Meteor (Android)
           command: |
             pwd     
-            bundle exec fastlane android beta 
-            export BUILD_ANDROID_DIR=.build/android/project/build/outputs/apk/release/
-
-            $ANDROID_ZIPALIGN 4 \
-              ${BUILD_ANDROID_DIR}project-release-unsigned.apk \
-              ${BUILD_ANDROID_DIR}project-release.apk
-
+            git clone git@bitbucket.org:possys/certs.git .certs
+            bundle exec fastlane android beta
             
