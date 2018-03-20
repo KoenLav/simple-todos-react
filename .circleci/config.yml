@@ -22,7 +22,7 @@ jobs:
             brew tap caskroom/cask
             brew tap caskroom/versions
             brew cask install android-sdk
-            brew cask install gradle
+            brew install gradle
       - run:
           name: install Meteor
           # only install meteor if bin isn't found
