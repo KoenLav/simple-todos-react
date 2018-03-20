@@ -13,6 +13,9 @@ jobs:
           # only install meteor if bin isn't found
           command: command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com/ | /bin/sh 
       - run:
+          name: install Gradle
+          command: sudo apt-get install gradle
+      - run:
           name: check versions
           command: |
             echo "Meteor version:"
