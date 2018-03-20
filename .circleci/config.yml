@@ -59,6 +59,7 @@ jobs:
             sudo gem install bundler
 
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
+            cd 
             bundle install
 
             git clone git@bitbucket.org:possys/certs.git .certs
