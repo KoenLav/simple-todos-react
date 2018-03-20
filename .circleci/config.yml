@@ -37,6 +37,7 @@ jobs:
           root: ~/app
           paths:
             - node_modules
+            - .build
   android:
     working_directory: ~/app
     docker:
@@ -46,6 +47,9 @@ jobs:
           path: ~/app
       - attach_workspace:
           at: ~/app
+      - run:
+          name: install Ruby
+          command: sudo apt-get install ruby2.3-dev && sudo apt-get install rubygems
       - run:
           name: Build Meteor (Android)
           command: |
