@@ -87,7 +87,7 @@ jobs:
           name: Build Meteor (IOS)
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                        ./gradlew wrapper --gradle-version 2.12
+              ./gradlew wrapper --gradle-version 2.12
 
               sudo gem install fastlane -NV
               sudo gem install bundler
@@ -96,7 +96,7 @@ jobs:
               pwd
               echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
               bundle install
-              # bundle exec fastlane ios beta
+              bundle exec fastlane ios beta
             # fi
 workflows:
   version: 2
