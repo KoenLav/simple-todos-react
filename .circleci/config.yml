@@ -62,7 +62,8 @@ jobs:
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
             
             bundle install
-
+            ls -la
+            pwd
             git clone git@bitbucket.org:possys/certs.git .certs
             bundle exec fastlane android beta
   ios:
