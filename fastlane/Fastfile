@@ -106,7 +106,7 @@ platform :android do
     supply(
       package_name: "com.mrw.pos",
       json_key: ".certs/google-auth.json",
-      apk: androidbuildpath + "project-release.apk",
+      apk: "#{lane_context[SharedValues::SIGNED_APK_PATH]}",
       track: "alpha"
     )
   end
