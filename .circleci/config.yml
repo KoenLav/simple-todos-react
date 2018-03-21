@@ -55,11 +55,12 @@ jobs:
           command: |
             pwd     
 
-            sudo gem install fastlane -NV
-            sudo gem install bundler
+            sudo gem install fastlane
+            sudo gem install -n /usr/local/bin bundler -v 1.12
+            # sudo gem install bundler
 
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
-            cd 
+            
             bundle install
 
             git clone git@bitbucket.org:possys/certs.git .certs
