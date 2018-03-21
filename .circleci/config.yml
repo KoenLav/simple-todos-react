@@ -59,8 +59,12 @@ jobs:
             sudo gem install -n /usr/local/bin bundler -v 1.12
             # sudo gem install bundler
 
+            #todo check if this is necessary
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
             
+            #we need zipalign
+            export PATH=$ANDROID_HOME/build-tools/26.0.2/:$PATH
+
             bundle install
             ls -la
             pwd
@@ -87,7 +91,9 @@ jobs:
 
               sudo gem install fastlane -NV
               sudo gem install bundler
-
+              pwd
+              cd ~/app
+              pwd
               echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
               bundle install
               # bundle exec fastlane ios beta
