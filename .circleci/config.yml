@@ -53,21 +53,11 @@ jobs:
       - run:
           name: Build Meteor (Android)
           command: |
-            pwd     
-
             sudo gem install fastlane
             sudo gem install -n /usr/local/bin bundler -v 1.12
-            # sudo gem install bundler
-
-            #todo check if this is necessary
-            echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
-            
-            #we need zipalign
+            #we need zipalign in our path
             export PATH=$ANDROID_HOME/build-tools/26.0.2/:$PATH
-
             bundle install
-            ls -la
-            pwd
             git clone git@bitbucket.org:possys/certs.git .certs
             bundle exec fastlane android beta
   ios:
@@ -83,8 +73,21 @@ jobs:
       - run:
           name: Set Ruby Version
           command:  echo "ruby-2.4" > ~/.ruby-version
+          path: ~/app
       - run:
-          name: Build Meteor (IOS)
+          name: install Meteor
+          # only install meteor if bin isn't found
+          command: command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com/ | /bin/sh 
+      - run:
+          name: install npm packages
+          command: meteor npm install
+      - run:
+          name: Build Meteor
+          command: |
+            cd ~/app
+            meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
+      - run:
+          name: Build ipa (IOS)
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
               ./gradlew wrapper --gradle-version 2.12
