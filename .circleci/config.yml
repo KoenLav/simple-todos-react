@@ -85,6 +85,7 @@ jobs:
           name: Build Meteor
           command: |
             cd ~/app
+            sed -i '/android/d' ./.meteor/platforms
             meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
       - run:
           name: Build ipa (IOS)
