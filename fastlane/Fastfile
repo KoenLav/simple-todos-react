@@ -1,0 +1,173 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+import './actions/sign_apk.rb'
+
+default_platform(:ios)
+
+# Todo: use fastlane for signing and submitting android builds
+platform :android do 
+  desc "Build beta Android version"
+  lane :beta do
+    androidprojpath = ".build/android/project"
+    androidbuildpath = androidprojpath + "/build/outputs/apk/"
+    ENV["ANDROID_STORE_PASS"] = "koenkk"
+    ENV["CERTIFICATE_PASSWORD"] = "koenkk"
+    
+    
+    gradle(
+      task: "clean",
+      project_dir: androidprojpath,
+      properties: {
+        # "android.injected.signing.store.file" => "./certs/upload.keystore",
+        # "android.injected.signing.store.password" => $ENV["ANDROID_STORE_PASS"],
+        # "android.injected.signing.key.alias" => "mrwinston",
+        # # "android.injected.signing.key.password" => $ENV["CERTIFICATE_PASSWORD"],
+      }
+    )
+
+    gradle(
+      task: "assemble",
+      project_dir: androidprojpath,
+      build_type: "Release",
+      properties: {
+        # "android.injected.signing.store.file" => "./certs/upload.keystore",
+        # "android.injected.signing.store.password" => ENV["ANDROID_STORE_PASS"],
+        # "android.injected.signing.key.alias" => "mrwinston",
+        # "android.injected.signing.key.password" => ENV["CERTIFICATE_PASSWORD"],
+      }
+    )
+
+    sign_apk(
+      keystore_path: ".certs/.keystore",
+      alias: "mrwinston",
+      storepass: ENV["ANDROID_STORE_PASS"],
+      tsa: "http://timestamp.comodoca.com/rfc316",
+    )
+
+    zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+    
+    gradle(task: "test")
+    
+    # delete_keychain(name: "mrwinston")
+
+    # create_keychain(
+    #   default_keychain: true,
+    #   name: "mrwinston",
+    #   unlock: true,
+    #   password: ENV["ANDROID_STORE_PASS"],
+    #   timeout: 3600,
+    #   lock_when_sleeps: true
+    # )
+
+    # get_certificates(
+    #   development: true,
+    #   username: "info@duodeka.nl",
+    #   platform: "android"
+    # )
+    
+    # import_certificate(
+    #   keychain_name: "mrwinston",
+    #   # keychain_path: "./certs/test.keystore",
+    #   certificate_path: ".certs/upload.p12",
+    #   log_output: true,
+    #   certificate_password: ENV["CERTIFICATE_PASSWORD"] || "default"
+    # )
+    
+    # sh("pwd")
+    
+    # sh(
+    #   "jarsigner", 
+    #   "--verbose",
+    #   "--sigalg", "SHA1",
+    #   "--storepass", ENV["ANDROID_STORE_PASS"],
+    #   "../" + androidbuildpath + "project-release-unsigned.apk",
+    #   "-keystore", "../.certs/keystore.jks",
+    #   "mykey"
+    # )
+
+    # sh(
+    #   "$ANDROID_ZIP_ALIGN",
+    #   "4",
+    #   "../" + androidbuildpath + "project-release-unsigned.apk",
+    #   "../" + androidbuildpath + "project-release.apk",
+    # )
+
+    supply(
+      package_name: "com.mrw.pos",
+      json_key: ".certs/google-auth.json",
+      apk: androidbuildpath + "project-release.apk",
+      track: "alpha"
+    )
+  end
+end
+
+platform :ios do
+  
+  before_all do
+  
+    # xcversion(version: "9.2")
+
+    if Helper.is_ci? # As in my local machine I don't need to import the certificates, only run if it's in the CI
+      setup_circle_ci
+    end
+
+    match(
+      app_identifier: ["com.mrw.pos"], 
+      readonly: true, 
+      git_url: "git@bitbucket.org:possys/certs.git",
+      type:"appstore"
+    )
+  end
+
+  desc "Build development version"
+  lane :dev do
+    build_app(
+      workspace: ".build/ios/project/Mr Winston.xcworkspace", 
+      scheme: "Mr Winston",
+      clean: true,
+      # project: "#{ENV['METEOR_OUTPUT_ABSOLUTE']}/ios/project/#{ENV['XCODE_SCHEME_NAME']}.xcodeproj",
+      include_bitcode: false,
+      export_method: "development"
+    )
+  end
+
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    team_id = "DXR2SHC2C7"
+    xcodeprojpath = ".build/ios/project/Mr Winston.xcodeproj"
+
+    upgrade_super_old_xcode_project(
+      path: xcodeprojpath,
+      team_id: team_id
+    )
+
+    disable_automatic_code_signing(
+      path: xcodeprojpath
+    )
+
+    update_project_team(
+      path: xcodeprojpath,
+      teamid: team_id
+    )
+    
+    build_app(
+      workspace: ".build/ios/project/Mr Winston.xcworkspace", 
+      scheme: "Mr Winston",
+      clean: true,
+      # project: "#{ENV['METEOR_OUTPUT_ABSOLUTE']}/ios/project/#{ENV['XCODE_SCHEME_NAME']}.xcodeproj",
+      include_bitcode: false,
+      export_method: "app-store",
+      xcargs: "PROVISIONING_PROFILE_SPECIFIER='match AppStore com.mrw.pos'"
+    )
+
+    upload_to_testflight
+  end
+end
