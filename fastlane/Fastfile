@@ -46,7 +46,7 @@ platform :android do
     )
 
     sign_apk(
-      keystore_path: ".certs/.keystore",
+      keystore_path: ".certs/keystore",
       alias: "mrwinston",
       storepass: ENV["ANDROID_STORE_PASS"],
       tsa: "http://timestamp.comodoca.com/rfc316",
