@@ -54,7 +54,10 @@ platform :android do
 
     zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
     
-    gradle(task: "test")
+    gradle(
+      task: "test",
+      project_dir: androidprojpath
+    )
     
     # delete_keychain(name: "mrwinston")
 
