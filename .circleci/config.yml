@@ -16,10 +16,10 @@ jobs:
       - run:
           name: install android sdk
           command: |
+            gem install bundler
             brew tap caskroom/cask
             brew tap caskroom/versions
             brew install gradle
-            brew install bundler
             brew cask install fastlane
             brew cask install android-sdk
             echo 'export PATH="$HOME/.fastlane/bin/fastlane_lib:$PATH"' >> ~/.bash_profile
