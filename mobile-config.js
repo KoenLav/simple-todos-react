@@ -5,7 +5,7 @@ App.info({
   author: 'Mr. Winston',
   email: 'info@mrwinston.nl',
   website: 'https://www.mrwinston.nl/',
-  version: '2.7.1',
+  version: '2.7.1212',
 });
 
 App.icons({
