@@ -21,7 +21,6 @@ jobs:
           command: |
             brew tap caskroom/cask
             brew tap caskroom/versions
-            brew cask install java
             brew cask install android-sdk
             brew install gradle
             #export PATH="$PATH:/usr/local/share/android-sdk/tools"
