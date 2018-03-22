@@ -27,7 +27,7 @@ jobs:
       - run:
           name: update android sdk
           command: |
-            echo "y" | sdkmanager "build-tools;26.0.2"
+            echo "y" | sdkmanager "build-tools;27.0.1"
             echo "y" | sdkmanager "platforms;android-26"
       - run:
           name: install Meteor
@@ -56,6 +56,12 @@ jobs:
             pwd
             meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
       - run:
+          name: Build Meteor (Android)
+          command: |
+            pwd     
+            git clone git@bitbucket.org:possys/certs.git .certs
+            bundle exec fastlane android beta
+      - run:
           name: Build Meteor (IOS)
           command: |
             sudo gem install fastlane -NV
@@ -63,10 +69,4 @@ jobs:
 
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
             bundle install
-      - run:
-          name: Build Meteor (Android)
-          command: |
-            pwd     
-            git clone git@bitbucket.org:possys/certs.git .certs
-            bundle exec fastlane android beta
             
