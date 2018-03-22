@@ -21,6 +21,7 @@ jobs:
           command: |
             brew tap caskroom/cask
             brew tap caskroom/versions
+            brew cask install java
             brew cask install android-sdk
             brew install gradle
             #export PATH="$PATH:/usr/local/share/android-sdk/tools"
@@ -44,6 +45,8 @@ jobs:
             meteor node -v
             echo "Meteor npm version:"
             meteor npm -v
+            echo "Gradle version:"
+            gradle -v
       - run:
           name: install npm packages
           command: meteor npm install
