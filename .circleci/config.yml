@@ -8,9 +8,6 @@ jobs:
       TOOL_NODE_FLAGS: --max-old-space-size=8192
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
-      ANDROID_HOME: "/usr/local/share/android-sdk"
-      ANDROID_SDK_HOME: "/usr/local/share/android-sdk"
-      ANDROID_SDK_ROOT: "/usr/local/share/android-sdk"
     steps:
       - checkout
       - run:
@@ -26,6 +23,8 @@ jobs:
             sudo gem install fastlane -NV
             sudo gem install bundler
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
+            echo 'export ANDROID_HOME=/usr/local/share/android-sdk'
+            echo 'export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools' >> ~/.bash_profile
       - run:
           name: update android sdk
           command: |
