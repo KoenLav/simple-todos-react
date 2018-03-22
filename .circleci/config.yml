@@ -20,8 +20,9 @@ jobs:
             brew tap caskroom/versions
             brew cask install android-sdk
             brew install gradle
-            gem install fastlane -NV
-            gem install bundler
+            brew cask install bundler
+            brew cask install fastlane
+            echo 'export PATH="$HOME/.fastlane/bin/fastlane_lib:$PATH"' >> ~/.bash_profile
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
             echo 'export ANDROID_HOME=/usr/local/share/android-sdk'
             echo 'export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools' >> ~/.bash_profile
