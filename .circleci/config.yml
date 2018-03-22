@@ -23,7 +23,9 @@ jobs:
             brew tap caskroom/versions
             brew cask install android-sdk
             brew install gradle
-            #export PATH="$PATH:/usr/local/share/android-sdk/tools"
+            sudo gem install fastlane -NV
+            sudo gem install bundler
+            echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
       - run:
           name: update android sdk
           command: |
@@ -51,22 +53,14 @@ jobs:
           command: meteor npm install
       - run:
           name: Build Meteor
-          command: |
-            source ~/.bash_profile
-            pwd
-            meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
+          command: meteor build --directory .build --architecture os.linux.x86_64 --server https://pos.mrwinston.nl
       - run:
           name: Build Meteor (Android)
           command: |
-            pwd     
             git clone git@bitbucket.org:possys/certs.git .certs
             bundle exec fastlane android beta
       - run:
           name: Build Meteor (IOS)
           command: |
-            sudo gem install fastlane -NV
-            sudo gem install bundler
-
-            echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
             bundle install
             
