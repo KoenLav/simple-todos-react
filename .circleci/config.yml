@@ -28,7 +28,7 @@ jobs:
       - run:
           name: update android sdk
           command: |
-            echo "y" | sdkmanager "build-tools;27.0.1"
+            echo "y" | sdkmanager "build-tools;27.0.3"
             echo "y" | sdkmanager "platforms;android-26"
       - run:
           name: install Meteor
@@ -57,9 +57,11 @@ jobs:
           name: Build Meteor (Android)
           command: |
             git clone git@bitbucket.org:possys/certs.git .certs
+            bundle install
             bundle exec fastlane android beta
       - run:
           name: Build Meteor (IOS)
           command: |
             bundle install
+            bundle exec fastlane ios beta
             
