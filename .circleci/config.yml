@@ -16,11 +16,11 @@ jobs:
       - run:
           name: install android sdk
           command: |
-            gem install bundler
+            chruby 2.3.1 && gem install bundler
+            chruby 2.3.1 && gem install fastlane -NV
             brew tap caskroom/cask
             brew tap caskroom/versions
             brew install gradle
-            brew cask install fastlane
             brew cask install android-sdk
             echo 'export PATH="$HOME/.fastlane/bin/fastlane_lib:$PATH"' >> ~/.bash_profile
             echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >> ~/.bash_profile
